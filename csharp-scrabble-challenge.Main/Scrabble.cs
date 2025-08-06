@@ -62,8 +62,6 @@ namespace csharp_scrabble_challenge.Main
         public Scrabble(string word)
         {
             processedWord = word.ToLowerInvariant();
-            // assumes brackets are valid, ie no "{street{" or mixing double with triple points
-
         }
 
         public int score()
