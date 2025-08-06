@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -56,6 +57,8 @@ namespace csharp_scrabble_challenge.Main
         int doublePointsMultiplier = 2;
         int triplePointsMultiplier = 3;
 
+        bool endedBonusBeforeStarting = false;
+
         public Scrabble(string word)
         {
             processedWord = word.ToLowerInvariant();
@@ -75,16 +78,31 @@ namespace csharp_scrabble_challenge.Main
                     case startDoublePoints:
                         isDoublePointsActive = true;
                         break;
+
                     case endDoublePoints:
+                        if(!isDoublePointsActive)
+                            endedBonusBeforeStarting = true;
+
                         isDoublePointsActive = false; 
                         break;
+
                     case startTriplePoints:
                         isTriplePointsActive = true;
                         break;
+
                     case endTriplePoints:
+                        if (isTriplePointsActive == false)
+                            endedBonusBeforeStarting = true;
+
                         isTriplePointsActive = false;
                         break;
 
+                    default:
+                        bool isValid = char.IsLetter(letter);
+                        if (!isValid)
+                            return 0;
+                        
+                        break;
                 }
 
                 letterToScoreMap.TryGetValue(letter, out var score);
@@ -98,6 +116,12 @@ namespace csharp_scrabble_challenge.Main
 
                 totalScore += score;
             }
+
+            if (isDoublePointsActive || isTriplePointsActive)
+                return 0;
+
+            if (endedBonusBeforeStarting)
+                return 0;
 
             return totalScore;
         }
