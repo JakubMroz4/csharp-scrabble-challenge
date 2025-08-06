@@ -41,14 +41,25 @@ namespace csharp_scrabble_challenge.Main
 
         private string processedWord;
 
+        // [] triple points
+        // {} double points
+
+        private const char startDoublePoints = '{';
+        private const char endDoublePoints = '}';
+
+        private const char startTriplePoints = '[';
+        private const char endTriplePoints = ']';
+
+        bool isDoublePointsActive = false;
+        bool isTriplePointsActive = false;
+
+        int doublePointsMultiplier = 2;
+        int triplePointsMultiplier = 3;
+
         public Scrabble(string word)
-        {            
-            //TODO: do something with the word variable
-
-            bool isValid = word.All(char.IsLetter);
-
-
-            processedWord = word.ToLower();
+        {
+            processedWord = word.ToLowerInvariant();
+            // assumes brackets are valid, ie no "{street{" or mixing double with triple points
 
         }
 
@@ -56,10 +67,35 @@ namespace csharp_scrabble_challenge.Main
         {
             int totalScore = 0;
 
-            //TODO: score calculation code goes here
             foreach (var letter in processedWord)
             {
+
+                switch (letter)
+                {
+                    case startDoublePoints:
+                        isDoublePointsActive = true;
+                        break;
+                    case endDoublePoints:
+                        isDoublePointsActive = false; 
+                        break;
+                    case startTriplePoints:
+                        isTriplePointsActive = true;
+                        break;
+                    case endTriplePoints:
+                        isTriplePointsActive = false;
+                        break;
+
+                }
+
                 letterToScoreMap.TryGetValue(letter, out var score);
+
+                if (isDoublePointsActive)
+                    score *= doublePointsMultiplier;
+                    
+                if (isTriplePointsActive)
+                    score *= triplePointsMultiplier;
+                    
+
                 totalScore += score;
             }
 
